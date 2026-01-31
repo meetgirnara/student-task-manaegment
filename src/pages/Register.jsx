@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import React from "react";
 import "./Register.css";
 
@@ -38,6 +39,10 @@ const Register = () => {
                 Register
             </button>
         </form>
+          {/*link  to Rgister page*/}
+        <p className="link-text">
+            Don't have an account? <Link to="/login">login here</Link>
+        </p>
         </div>
     </>
     );
