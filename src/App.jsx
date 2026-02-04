@@ -4,6 +4,8 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import AuthGuard from "./auth/Authguard";
+import Navbar from "./components/Navbar";
+import TaskList from "./components/TaskList";
 
 import {
   createBrowserRouter,
