@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
-
-const TaskForm = ({ onTaskAdded }) => {
+const TaskForm = ({ editTask, setEditTask, onTaskSaved }) => {
   const [formData, setFormData] = useState({
+    id: "",
     title: "",
     description: "",
     duedate: "",
@@ -11,14 +11,33 @@ const TaskForm = ({ onTaskAdded }) => {
 
   const [errors, setErrors] = useState({});
 
-  const handleInputChange = (e) => {
+  // ✏️ Edit mode: fill form
+  useEffect(() => {
+    if (editTask) {
+      setFormData({
+        id: editTask.id,
+        title: editTask.title,
+        description: editTask.description,
+        duedate: editTask.dueDate,
+        priority: editTask.priority,
+      });
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [editTask]);
+
+  // input change
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
     setErrors({ ...errors, [name]: "" });
   };
 
+  // validation
   const validate = () => {
     const newErrors = {};
+
+    if (!formData.id.trim()) newErrors.id = "Task ID is required";
     if (!formData.title.trim()) newErrors.title = "Task title is required";
     if (!formData.description.trim())
       newErrors.description = "Description is required";
@@ -28,103 +47,138 @@ const TaskForm = ({ onTaskAdded }) => {
     return Object.keys(newErrors).length === 0;
   };
 
+  // clear form
   const handleClear = () => {
     setFormData({
+      id: "",
       title: "",
       description: "",
       duedate: "",
       priority: "low",
     });
     setErrors({});
+    setEditTask(null);
   };
 
-  const handleAddTask = async (e) => {
+  // submit (add / edit)
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
 
-    const newTask = {
+    const taskData = {
+      id: formData.id,
       title: formData.title,
       description: formData.description,
       dueDate: formData.duedate,
       priority: formData.priority,
-      completed: false,
+      completed: editTask ? editTask.completed : false,
     };
 
     try {
-      const response = await fetch("http://localhost:3000/tasks", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newTask),
-      });
+      let savedTask;
 
-      const savedTask = await response.json(); // 🔥 id with data
+      // ✏️ EDIT
+      if (editTask) {
+        const res = await fetch(
+          `http://localhost:3000/tasks/${editTask.id}`,
+          {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(taskData),
+          }
+        );
+        savedTask = await res.json();
 
-    // ✅ 2. Save to localStorage
-    const existingTasks =
-      JSON.parse(localStorage.getItem("tasks")) || [];
+        // 🔁 update localStorage
+        const storedTasks =
+          JSON.parse(localStorage.getItem("tasks")) || [];
+        const updatedLocal = storedTasks.map((t) =>
+          t.id === savedTask.id ? savedTask : t
+        );
+        localStorage.setItem("tasks", JSON.stringify(updatedLocal));
 
-    localStorage.setItem(
-      "tasks",
-      JSON.stringify([...existingTasks, savedTask])
-    );
-      alert("Task added successfully!");
+        onTaskSaved(savedTask, true);
+        setEditTask(null);
+      }
 
-      setFormData({
-        title: "",
-        description: "",
-        duedate: "",
-        priority: "low",
-      });
-      setErrors({});
+      // ➕ ADD
+      else {
+        const res = await fetch("http://localhost:3000/tasks", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(taskData),
+        });
+        alert("Task added successfully");
+        savedTask = await res.json();
 
-      // 🔥 Dashboard ne notify karo
-      onTaskAdded();
+        // 💾 save to localStorage
+        const storedTasks =
+          JSON.parse(localStorage.getItem("tasks")) || [];
+        localStorage.setItem(
+          "tasks",
+          JSON.stringify([...storedTasks, savedTask])
+        );
+
+        onTaskSaved(savedTask, false);
+      }
+
+      handleClear();
     } catch (error) {
-      console.error("Error adding task:", error);
+      console.error("Task save error:", error);
     }
   };
 
   return (
     <div className="add-task-card">
-      <h2 style={{ marginBottom: "15px" }}>Add New Task</h2>
+      <h2 style={{ marginBottom: "15px" }}>
+        {editTask ? "Edit Task" : "Add New Task"}
+      </h2>
 
-      <form onSubmit={handleAddTask}>
+      <form onSubmit={handleSubmit}>
+        {/* Task ID */}
         <div>
           <input
-            style={{marginBottom: "6px", backgroundColor: "rgb(31 32 52 / 50%)"}}
-            type="text"
+            name="id"
+            placeholder="Task ID"
+            value={formData.id}
+            onChange={handleChange}
+          />
+          {errors.id && <span className="error-msg">{errors.id}</span>}
+        </div>
+
+        {/* Title */}
+        <div>
+          <input
             name="title"
             placeholder="Task Title"
             value={formData.title}
-            onChange={handleInputChange}
+            onChange={handleChange}
           />
           {errors.title && <span className="error-msg">{errors.title}</span>}
         </div>
 
+        {/* Description */}
         <div>
           <textarea
-            style={{ backgroundColor: "rgb(31 32 52 / 50%)"}}
             name="description"
             placeholder="Description"
             rows="3"
             value={formData.description}
-            onChange={handleInputChange}
+            onChange={handleChange}
           />
           {errors.description && (
             <span className="error-msg">{errors.description}</span>
           )}
         </div>
 
-        <div style={{ display: "flex", gap: "10px", }}>
+        {/* Date + Priority */}
+        <div style={{ display: "flex", gap: "10px" }}>
           <div style={{ flex: 1 }}>
             <input
-              style={{ backgroundColor: "rgb(31 32 52 / 50%)"}}
               type="date"
               name="duedate"
               value={formData.duedate}
-              onChange={handleInputChange}
+              onChange={handleChange}
             />
             {errors.duedate && (
               <span className="error-msg">{errors.duedate}</span>
@@ -133,33 +187,33 @@ const TaskForm = ({ onTaskAdded }) => {
 
           <div style={{ flex: 1 }}>
             <select
-              style={{ backgroundColor: "rgb(31 32 52 / 50%)"}}
               name="priority"
               value={formData.priority}
-              onChange={handleInputChange}
+              onChange={handleChange}
             >
-              <option value="low">Low Priority</option>
-              <option value="medium">Medium Priority</option>
-              <option value="high">High Priority</option>
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
             </select>
           </div>
         </div>
 
+        {/* Buttons */}
         <div
           className="form-actions"
           style={{ display: "flex", gap: "10px", marginTop: "10px" }}
         >
           <button type="submit" className="btn-primary" style={{ flex: 1 }}>
-            Add Task
+            {editTask ? "Update Task" : "Add Task"}
           </button>
 
           <button
             type="button"
             className="btn-secondary"
-            style={{ flex: 1 ,backgroundColor : "rgb(31 32 52 / 50%)" }}
+            style={{ flex: 1 }}
             onClick={handleClear}
           >
-            Clear
+            {editTask ? "Cancel Edit" : "Clear"}
           </button>
         </div>
       </form>
