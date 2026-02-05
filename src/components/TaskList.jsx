@@ -36,6 +36,7 @@ const TaskList = ({ tasks }) => {
                 className="btn-icon"
                 style={{ background: "red" }}
                 title="Delete Task"
+                
               >
                 🗑️
               </button>

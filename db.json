@@ -1,29 +1,36 @@
 {
-    "tasks": [
-        {
-        "id": "1",
-        "title": "First Task",
-        "description": "This is your task served from json-server",
-        "dueDate": "2025-09-31",
-        "completed": false,
-        "priority": "High"
-        },
-        {
-        "id": "2",
-        "title": "Second Task ",
-        "description": "This is your second task served from json-server",
-        "dueDate": "2025-09-31",
-        "completed": false,
-        "priority": "Medium"
-        },
-        {
-        "id": "3",
-        "title": "Third Task ",
-        "description": "This is your third task served from json-server",
-        "dueDate": "2025-09-31",
-        "completed": false,
-        "priority": "Low"
-        }
-        
-    ]
+  "tasks": [
+    {
+      "id": "1",
+      "title": "First Task",
+      "description": "This is your task served from json-server",
+      "dueDate": "2025-09-31",
+      "completed": false,
+      "priority": "High"
+    },
+    {
+      "id": "2",
+      "title": "Second Task ",
+      "description": "This is your second task served from json-server",
+      "dueDate": "2025-09-31",
+      "completed": false,
+      "priority": "Medium"
+    },
+    {
+      "id": "3",
+      "title": "Third Task ",
+      "description": "This is your third task served from json-server",
+      "dueDate": "2025-09-31",
+      "completed": false,
+      "priority": "Low"
+    },
+    {
+      "id": "f14d",
+      "title": "Fourth Task",
+      "description": "This is your fourth task is added",
+      "dueDate": "2026-02-05",
+      "priority": "low",
+      "completed": false
+    }
+  ]
 }
