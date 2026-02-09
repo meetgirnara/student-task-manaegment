@@ -131,7 +131,7 @@ const TaskForm = ({ editTask, setEditTask, onTaskSaved }) => {
   return (
     <div className="add-task-card">
       <h2 style={{ marginBottom: "15px" }}>
-        {editTask ? "Edit Task" : "Add New Task"}
+        {editTask ? "Updet Task" : "Add New Task"}
       </h2>
 
       <form onSubmit={handleSubmit}>
@@ -191,9 +191,9 @@ const TaskForm = ({ editTask, setEditTask, onTaskSaved }) => {
               value={formData.priority}
               onChange={handleChange}
             >
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
+              <option value="low" style={{backgroundColor: "green"}}>Low</option>
+              <option value="medium" style={{backgroundColor: "orange"}}>Medium</option>
+              <option value="high" style={{backgroundColor: "red"}}>High</option>
             </select>
           </div>
         </div>
@@ -204,7 +204,7 @@ const TaskForm = ({ editTask, setEditTask, onTaskSaved }) => {
           style={{ display: "flex", gap: "10px", marginTop: "10px" }}
         >
           <button type="submit" className="btn-primary" style={{ flex: 1 }}>
-            {editTask ? "Update Task" : "Add Task"}
+            {editTask ? "Updet Task" : "Add Task"}
           </button>
 
           <button

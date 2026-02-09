@@ -155,7 +155,7 @@ select option{
 input:focus,
 textarea:focus,
 select:focus{
-  border-color: #00d2ff;
+  border-color: #2498b2;
   box-shadow: 0 0 8px rgba(0, 210, 255, 0.3);
 }
 
